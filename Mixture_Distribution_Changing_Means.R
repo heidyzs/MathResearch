@@ -234,7 +234,7 @@ end_time = Sys.time()
 end_time - start_time 
 
 
-write.csv(results, "./Mixture/mixture_mean60_mean_80_n.pop25_trial100.csv")
+#write.csv(results, "./Mixture/mixture_mean60_mean_80_n.pop25_trial100.csv")
 
 
 

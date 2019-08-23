@@ -291,7 +291,7 @@ for(k in sn.skew.range) {
 end_time = Sys.time()
 end_time - start_time
 
-write.csv(results, "full_bayes_with_sdprior_20.csv")
+#write.csv(results, "full_bayes_with_sdprior_20.csv")
 
 #Analyze Results
 library(tidyverse)
@@ -305,7 +305,6 @@ cover_percentages <- full_bayes %>% select("skew", "cover.bayes.sdprior20", "cov
     cover.perc.tdist = sum(cover.tdist),
     cover.perc.bca.exp = sum(cover.bca.exp))
 
-write.csv(cover_percentages, "Cover Percentages.csv")
 
 #TRUTH
 gah<-cp2dp(c(68,12.5, 0.9),"SN")

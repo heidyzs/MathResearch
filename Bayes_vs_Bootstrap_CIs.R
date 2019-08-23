@@ -200,7 +200,7 @@ for(k in sn.skew.range) {
 }#end k for skew
 
 
-write.csv(results, "bayes_vs_bootstrap_full_data_set.csv")
+#write.csv(results, "bayes_vs_bootstrap_full_data_set.csv")
 
 
 
