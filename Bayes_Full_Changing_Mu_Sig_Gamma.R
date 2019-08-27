@@ -219,7 +219,7 @@ for(k in sn.skew.range) {
       if(mu.prop>100|mu.prop<0){
         samps.mu[j]<-mu.old
       }else{
-        ratio<-log.lik(dat,mu.prop,samps.sig[j-1],samps.gam[j-1])+prior(mu.prop)-log.lik(dat,mu.old,samps.sig[j-1],samps.gam[j-1])-prior(mu.old)
+        ratio<-log.lik(y,mu.prop,samps.sig[j-1],samps.gam[j-1])+prior(mu.prop)-log.lik(y,mu.old,samps.sig[j-1],samps.gam[j-1])-prior(mu.old)
         alph<-log(runif(1))
         if(alph<ratio){
           samps.mu[j]<-mu.prop
@@ -232,7 +232,7 @@ for(k in sn.skew.range) {
       if(sig.prop>100|sig.prop<0){
         samps.sig[j]<-sig.old
       }else{
-        ratio<-log.lik(dat,samps.mu[j],sig.prop,samps.gam[j-1])-log.lik(dat,samps.mu[j], sig.old, samps.gam[j-1])
+        ratio<-log.lik(y,samps.mu[j],sig.prop,samps.gam[j-1])-log.lik(y,samps.mu[j], sig.old, samps.gam[j-1])
         alph<-log(runif(1))
         if(alph<ratio){
           samps.sig[j]<-sig.prop
@@ -245,7 +245,7 @@ for(k in sn.skew.range) {
       if(gam.prop>0.99527|gam.prop< -0.99527){
         samps.gam[j]<-gam.old
       }else{
-        ratio<-log.lik(dat,samps.mu[j],samps.sig[j],gam.prop)-log.lik(dat,samps.mu[j], samps.sig[j], gam.old)
+        ratio<-log.lik(y,samps.mu[j],samps.sig[j],gam.prop)-log.lik(y,samps.mu[j], samps.sig[j], gam.old)
         alph<-log(runif(1))
         if(alph<ratio){
           samps.gam[j]<-gam.prop
