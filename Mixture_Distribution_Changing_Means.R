@@ -1,6 +1,7 @@
 library(sn) # sampling from the skew-normal distribution is accomplished via the 'sn' package in R
 library(e1071) # needed to calculate sample skewness
-
+library(tidyverse)
+library(resample)
 
 ##################################################################################
 
@@ -111,23 +112,31 @@ count <- 1
   }
   true.mean2<-integrate(func2,0,100)[1]$value
   
-  w <- rbinom(n, 1, 0.5) #samples to create a probability for each cluster
-  data = vector(length = n)
-
-  a = 1
-  #Loop to generate data from a mixture distribution
-  for(i in w){
-    if (i == 1) {
-      data[a] = qsn(runif(n=1,min=LB.for.prob1,max=UB.for.prob1), dp=dp1, solver="RFB")
-      a <- a +1
-    }
-    else{
-      data[a] = qsn(runif(n=1,min=LB.for.prob2,max=UB.for.prob2), dp=dp2, solver="RFB")
-      a <- a + 1
-    }
-  }
-    
   for (l in 1:N.trials) {
+  
+    w <- rbinom(n, 1, 0.5) #samples to create a probability for each cluster
+    data = vector(length = n)
+  
+    a = 1
+    #Loop to generate data from a mixture distribution
+    for(i in w){
+      if (i == 1) {
+        data[a] = qsn(runif(n=1,min=LB.for.prob1,max=UB.for.prob1), dp=dp1, solver="RFB")
+        a <- a +1
+      }
+      else{
+        data[a] = qsn(runif(n=1,min=LB.for.prob2,max=UB.for.prob2), dp=dp2, solver="RFB")
+        a <- a + 1
+      }
+    }
+    
+    #Begin Sampling
+    b <- bootstrap(data, mean(data), R = N.bootstrap)  
+    # generate 95% CIs from the bootstrap sample
+    lb_tdist <- mean(data) - qt(0.975, df = length(data)-1)*sd(data)/sqrt(length(data))
+    ub_tdist <- mean(data) + qt(0.975, df = length(data)-1)*sd(data)/sqrt(length(data))
+    ci_bca_expanded <- CI.bca(b, probs = c(0.025, 0.975), expand = TRUE)
+    
     M<-5000
     
     #Assume we know mus and p and simulate zs
