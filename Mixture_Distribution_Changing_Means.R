@@ -21,7 +21,6 @@ likelihood<-function(mu,component,dat){
   dsn(dat, dp = dp)/(UB-LB)
 }
 
-
 #Log Likelihood
 log.lik<-function(mu,component,dat){
   if ((length(dat) == 0)) {
@@ -35,6 +34,7 @@ log.lik<-function(mu,component,dat){
     sum(dsn(dat,dp=dp,log=T)-log(UB-LB))
   }
 }
+
 
 estBetaParams <- function(mu.scaled, var.scaled) {
   mu<-mu.scaled/100
