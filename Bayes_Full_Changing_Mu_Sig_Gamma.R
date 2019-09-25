@@ -297,7 +297,7 @@ end_time - start_time
 library(tidyverse)
 library(ggplot2)
 
-full_bayes <- read.csv("full_bayes_with_sdprior_20.csv")
+full_bayes <- read.csv("full_bayes_with_sdprior_20_v2.csv")
 
 cover_percentages <- full_bayes %>% select("skew", "cover.bayes.sdprior20", "cover.tdist", "cover.bca.exp") %>% 
   group_by(skew) %>% summarize(
