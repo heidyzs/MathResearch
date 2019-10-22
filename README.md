@@ -9,7 +9,7 @@ All important files used to conduct SUS Analysis.
 * Results folder contains all .csv files generated from various r scripts, all files are used to generate plots in rmarkdown files. 
 
 ### Rmarkdown and HTML Files
-* 10 SEP Meeting Slides.Rmd is the rmarkdown file used to build all slides and plots used for the 10 SEP meeting.
+* 10 SEP Meeting Slides.Rmd is the rmarkdown file used to build all slides and plots used for the 10 SEP meeting. (Meeting conducted with NAG)
 * 10-SEP-Meeting-Slides.html is the html file of the slides generated from the rmd file.
 * 23 AUG Meeting Slides.Rmd is the rmarkdown file used to build all slides and plots used for the 23 AUG meeting.
 * 23-AUG-Meeting-Slides.html is is the html file of the slides generated from the rmd file.
