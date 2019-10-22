@@ -1,0 +1,269 @@
+---
+title: "23 AUG Meeting"
+author: 
+date: 
+output: 
+  ioslides_presentation:
+    widescreen: true
+    fig_width: 10
+    fig_height: 4
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+options(knitr.table.format = "html")
+library(tidyverse)
+library(ggrepel)
+library(sn)
+library(e1071)
+library(knitr)
+library(kableExtra)
+```
+
+## Prior Distribution Plots
+
+```{r Prior Distribution Functions, include = FALSE}
+estBetaParams <- function(mu.scaled, var.scaled) {
+  mu<-mu.scaled/100
+  var<-var.scaled/100^2
+  alpha <- ((1 - mu) / var - 1 / mu) * mu ^ 2
+  beta <- alpha * (1 / mu - 1)
+  return(params = list(alpha = alpha, beta = beta))
+}
+look_at_prior2<-function(muprior,sdprior){
+  varprior<-sdprior^2
+  pars<-estBetaParams(muprior,varprior)
+  alph<-pars$alpha
+  bet<-pars$beta
+  prior.vals.2<-rbeta(10000,alph,bet)*100
+  return(prior.vals.2)
+}
+```
+```{r Prior Distribution Plots}
+par(mfrow = c(2, 3))
+par(mar = c(5.1, 4.1, 4.1, 2.1))
+plot(density(look_at_prior2(70, 5)), main = "Muprior = 70 and SDprior = 5")
+plot(density(look_at_prior2(70, 10)), main = "Muprior = 70 and SDprior = 10")
+plot(density(look_at_prior2(70, 15)), main = "Muprior = 70 and SDprior = 15")
+plot(density(look_at_prior2(70, 20)), main = "Muprior = 70 and SDprior = 20")
+plot(density(look_at_prior2(70, 25)), main = "Muprior = 70 and SDprior = 25")
+plot(density(look_at_prior2(70, 30)), main = "Muprior = 70 and SDprior = 30")
+```
+
+##Bayes vs Boostrap CIs
+
+```{r Bayes vs Boostrap CI Tidy Data, include = FALSE}
+combined_results <- read.csv("bayes_vs_bootstrap_full_data_set.csv")
+width_results <- combined_results %>% select("trial", "N.pop", "skew", starts_with("width"))
+
+names(width_results) <- substring(names(width_results), 7)
+new_col_names <- c("Trial", "N.pop", "Skew", "T Dist", "BCaExp", "Bayes SDP5", 
+                   "Bayes SDP10", "Bayes SDP15", "Bayes SDP20", "Bayes SDP25",
+                   "Bayes SDP30")
+colnames(width_results) <- new_col_names
+
+width_results <- width_results %>% gather("T Dist", "BCaExp", "Bayes SDP5", 
+                                          "Bayes SDP10", "Bayes SDP15", "Bayes SDP20", 
+                                          "Bayes SDP25", "Bayes SDP30",
+                                          key = "CI.type", value = "width")
+
+
+#Generate boxplot for different width CIs
+
+means <- aggregate(width ~ CI.type + Skew, width_results, mean) #calculate means by CI.type to generate labels
+```
+```{r Bayes vs Boostrap CI Plot, fig.width = 10, fig.height = 5}
+width_results %>% group_by(CI.type) %>% arrange(desc(CI.type)) %>% 
+  ggplot(aes(x = as.factor(CI.type), y = width)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 6.2) +
+  geom_hline(yintercept = 20) +
+  stat_summary(fun.y = mean, colour = "darkred", 
+               geom="point", shape = 18, size = 3, show.legend = FALSE)+
+  geom_text_repel(data = means, aes(label = round(width, digits = 2))) +
+  facet_wrap(~Skew, labeller = label_both) +
+  coord_flip()
+```
+<div class="notes">
+- N.pop = 10
+- N.trials = 100
+- Mu Prior = 70
+</div>
+
+##Cover Perentages
+
+```{r}
+cover_percentages <- combined_results %>% group_by(skew) %>% select("skew", starts_with("cover")) %>% 
+  summarise_each(mean)
+colnames(cover_percentages) <- c("skew", "Tdist", "BCaExp", "BayesSDP5", "BayesSDP10", "BayesSDP15",
+                                  "BayesSD20", "BayesSDP25", "BayesSDP30")
+
+cover_percentages %>% kable() %>% kable_styling(font_size = 20) %>% 
+  column_spec(1, bold = T) %>% 
+  column_spec(2, width = "15cm")
+```
+
+## Full Bayes with Bootstrap CIs {.smaller}
+
+```{r full bayes, include = FALSE}
+full_bayes <- read.csv("full_bayes_with_sdprior_20_v2.csv")
+#Making Data Tidy To Plot######
+width_results <- full_bayes %>% select("trial", "N.pop", "skew", starts_with("width"))
+
+names(width_results) <- substring(names(width_results), 7)
+new_col_names <- c("Trial", "N.pop", "Skew", "T Dist", "BCaExp", "Bayes SDP20")
+colnames(width_results) <- new_col_names
+
+width_results <- width_results %>% gather("T Dist", "BCaExp", "Bayes SDP20", 
+                                          key = "CI.type", value = "width")
+
+
+#Generate boxplot for different width CIs
+
+means <- aggregate(width ~ CI.type + Skew, width_results, mean) #calculate means by CI.type to generate labels
+
+```
+```{r}
+width_results %>% group_by(CI.type) %>% arrange(desc(CI.type)) %>% 
+  ggplot(aes(x = as.factor(CI.type), y = width)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 6.2) +
+  geom_hline(yintercept = 20) +
+  stat_summary(fun.y = mean, colour = "darkred", geom="point", 
+               shape = 18, size = 3, show.legend = FALSE)+
+  geom_text_repel(data = means, aes(label = round(width, digits = 2))) +
+  facet_wrap(~Skew, labeller = label_both) +
+  coord_flip()
+```
+<div class="notes">
+- N.pop = 10
+- N.trials = 100
+- Mu Prior = 70
+</div>
+
+##Cover Percentages
+
+```{r}
+full_bayes %>% group_by(skew) %>% select("skew", starts_with("cover")) %>% 
+  summarise_each(mean) %>% 
+  kable() %>% 
+  kable_styling(bootstrap_options = "striped") %>% 
+  column_spec(1, bold = T)
+```
+
+##Mixture Distributions {.smaller}
+
+```{r, include = FALSE}
+#Distribution 1
+sn_mean1 <- 40
+sn_stdev1 <- 12.5
+sn_skew1 <- 0.5  
+cp1 <- c(mean=sn_mean1, s.d.=sn_stdev1, gamma1=sn_skew1)
+dp1 <- cp2dp(cp1, family="SN") # the cp2dp function converts the centered parameterization
+LB.for.prob1<-psn(0, dp=dp1) # finds the probability associated with the minimum SUS
+UB.for.prob1<-psn(100, dp=dp1) # finds the probability associated with the maximum SUS
+#Distribution 2
+sn_mean2 <- 70
+sn_stdev2 <- 12.5
+sn_skew2 <- -0.5  
+cp2 <- c(mean=sn_mean2, s.d.=sn_stdev2, gamma1=sn_skew2)
+dp2 <- cp2dp(cp2, family="SN") # 
+LB.for.prob2<-psn(0, dp=dp2) # finds the probability associated with the minimum SUS
+UB.for.prob2<-psn(100, dp=dp2) # finds the probability associated with the maximum SUS
+
+n <- 1000
+w <- rbinom(n, 1, 0.5) #samples to create a probability for each cluster
+data = vector(length = n)
+a = 1
+#Loop to generate data from a mixture distribution
+for(i in w){
+  if (i == 1) {
+    data[a] = qsn(runif(n=1,min=LB.for.prob1,max=UB.for.prob1), dp=dp1, solver="RFB")
+    a <- a +1
+  }
+  else{
+    data[a] = qsn(runif(n=1,min=LB.for.prob2,max=UB.for.prob2), dp=dp2, solver="RFB")
+    a <- a + 1
+  }
+}
+  
+```
+```{r Mixture Distribution Plot}
+mix <- density(data)
+hump1 <- density(qsn(runif(n=500,min=LB.for.prob1,max=UB.for.prob1), dp=dp1, solver="RFB"))
+hump2 <- density(qsn(runif(n=500,min=LB.for.prob2,max=UB.for.prob2), dp=dp2, solver="RFB"))
+
+plot(range(mix$x, hump1$x, hump2$x), range(mix$y, hump1$y, hump2$y), type = "n", 
+     xlab = "x", ylab = "Density")
+lines(hump1, col = "red") 
+lines(hump2, col = "blue")
+lines(mix)
+
+```
+$f(y_{i}) = f_{1}(y_{i} \mid \theta_{1} = 40)^{z_{i}}f_{2}(y_{i} \mid \theta_{2} = 70)^{1-z_{i}}$
+
+$y_{1} \sim SN(\mu_{i},  \sigma = 12.5, \gamma = 0.5)$, 
+$y_{2} \sim SN(\mu_{2}, \sigma = 12.5, \gamma = -0.5)$, 
+$z_{i} \sim Ber(p)$
+
+## Mixture Distributions with Different Mean Combinations
+
+<style>
+.column-left{
+  float: left;
+  width: 35%;
+}
+
+.column-right{
+  float: right;
+  width: 40%;
+}
+</style>
+
+```{r import_csvs, include = FALSE}
+mixture.25 <- read.csv("./Mixture/mixture_bootstrap_n.pop25_trial100_v2.csv")
+mixture.10 <- read.csv("./Mixture/mixture_bootstrap_n.pop10_trial100_v2.csv")
+```
+<div class = "column-right">
+```{r}
+mixture.25 %>% group_by(mean1, mean2) %>% 
+  summarize(
+    avgcorrect = mean(perc.correct)
+  ) %>% 
+  kable() %>% 
+  kable_styling(bootstrap_options = "striped", full_width = F) %>% 
+  footnote(general = "N.pop = 25, N.trials = 100")
+```
+</div>
+
+<div class = "column-left">
+```{r}
+mixture.10  %>% group_by(mean1, mean2) %>% 
+  summarize(
+    avgcorrect = mean(perc.correct)
+  ) %>% 
+  kable() %>% 
+  kable_styling(bootstrap_options = "striped", full_width = F) %>% 
+  footnote(general = "N.pop = 10, N.trials = 100")
+```
+</div>
+
+
+## Mixture Distribution with Different Prior Mu Combinations
+
+```{r}
+combined_muprior <- read.csv("./Mixture/mixture_bootstrap_mean70_changing_muprior.csv")
+
+combined_muprior %>% group_by(mean1, mean2, muprior1, muprior2) %>% 
+  summarise(
+    avg_correct = mean(perc.correct)
+  ) %>% 
+  kable() %>% 
+  kable_styling(bootstrap_options = "striped", full_width = F) %>% 
+  footnote(general = "N.pop = 25, N.trials = 100")
+```
+
+
+

@@ -1,0 +1,251 @@
+---
+title: "10 SEP Meeting"
+author: 
+date:
+output: 
+  ioslides_presentation:
+    widescreen: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+options(knitr.table.format = "html")
+library(tidyverse)
+library(ggrepel)
+library(sn)
+library(e1071)
+library(knitr)
+library(kableExtra)
+```
+
+##Skew Normal Density Plots
+```{r, include = FALSE}
+common_mean <- 68
+common_sd <- 12.5
+sn_skew1 <- -0.9  
+cp1 <- c(mean=common_mean, s.d.=common_sd, gamma1=sn_skew1)
+dp1 <- cp2dp(cp1, family="SN") # the cp2dp function converts the centered parameterization
+LB.for.prob1<-psn(0, dp=dp1) # finds the probability associated with the minimum SUS
+UB.for.prob1<-psn(100, dp=dp1) # finds the probability associated with the maximum SUS
+
+sn_skew2 <- -0.5 
+cp2 <- c(mean=common_mean, s.d.=common_sd, gamma1=sn_skew2)
+dp2 <- cp2dp(cp1, family="SN") # the cp2dp function converts the centered parameterization
+LB.for.prob2<-psn(0, dp=dp2) # finds the probability associated with the minimum SUS
+UB.for.prob2<-psn(100, dp=dp2) # finds the probability associated with the maximum SUS
+
+sn_skew3 <- 0
+cp3 <- c(mean=common_mean, s.d.=common_sd, gamma1=sn_skew3)
+dp3 <- cp2dp(cp3, family="SN") # the cp2dp function converts the centered parameterization
+LB.for.prob3<-psn(0, dp=dp3) # finds the probability associated with the minimum SUS
+UB.for.prob3<-psn(100, dp=dp3) # finds the probability associated with the maximum SUS
+
+sn_skew4 <- 0.5
+cp4 <- c(mean=common_mean, s.d.=common_sd, gamma1=sn_skew4)
+dp4 <- cp2dp(cp4, family="SN") # the cp2dp function converts the centered parameterization
+LB.for.prob4<-psn(0, dp=dp4) # finds the probability associated with the minimum SUS
+UB.for.prob4<-psn(100, dp=dp4) # finds the probability associated with the maximum SUS
+
+sn_skew5 <- 0.9
+cp5 <- c(mean=common_mean, s.d.=common_sd, gamma1=sn_skew5)
+dp5 <- cp2dp(cp5, family="SN") # the cp2dp function converts the centered parameterization
+LB.for.prob5<-psn(0, dp=dp5) # finds the probability associated with the minimum SUS
+UB.for.prob5<-psn(100, dp=dp5) # finds the probability associated with the maximum SUS
+
+skew1 <- qsn(runif(n=1000,min=LB.for.prob1,max=UB.for.prob2), dp=dp1, solver="RFB")
+skew2 <- qsn(runif(n=1000,min=LB.for.prob2,max=UB.for.prob2), dp=dp2, solver="RFB")
+skew3 <- qsn(runif(n=1000,min=LB.for.prob3,max=UB.for.prob3), dp=dp3, solver="RFB")
+skew4 <- qsn(runif(n=1000,min=LB.for.prob4,max=UB.for.prob4), dp=dp4, solver="RFB")
+skew5 <- qsn(runif(n=1000,min=LB.for.prob5,max=UB.for.prob5), dp=dp5, solver="RFB")
+
+```
+```{r, fig.width = 10, fig.height = 5}
+par(mfrow = c(2, 3))
+par(mar = c(5.1, 4.1, 4.1, 2.1))
+plot(density(skew1), main = "Skew = -0.9")
+plot(density(skew2), main = "Skew = -0.5")
+plot(density(skew3), main = "Skew = 0")
+plot(density(skew4), main = "Skew = 0.5")
+plot(density(skew5), main = "Skew = 0.9")
+```
+<div class="notes">
+-Mean = 68
+-SD = 12.5
+</div>
+
+
+```{r, include = FALSE}
+skewnormal <- read.csv("results_0hw.csv")
+
+#Making Data TIDY
+
+cover_skew <- skewnormal %>% select("N.pop", "skew", starts_with("cover"))
+names(cover_skew) <- substring(names(cover_skew), 7)
+colnames(cover_skew)[1] <- "N.pop"
+colnames(cover_skew)[2] <- "skew"
+cover_skew <- cover_skew %>% gather("perc", "perc.exp", "clt", "tdist", "bca", "bca.exp",
+                          key = "CI.type", value = "cover.percentage")
+
+width_skew <- skewnormal %>% select("N.pop", "skew", starts_with("width"))
+names(width_skew) <- substring(names(width_skew), 7)
+colnames(width_skew)[1] <- "N.pop"
+colnames(width_skew)[2] <- "skew"
+width_skew <- width_skew %>% gather("perc", "perc.exp", "clt","tdist", "bca", "bca.exp",
+                          key = "CI.type", value = "width")
+
+
+high_skew <- skewnormal %>% select("N.pop", "skew", starts_with("high"))
+names(high_skew) <- substring(names(high_skew), 6)
+colnames(high_skew)[1] <- "N.pop"
+colnames(high_skew)[2] <- "skew"
+high_skew <- high_skew %>% gather("perc", "perc.exp", "clt","tdist", "bca", "bca.exp",
+                                    key = "CI.type", value = "high")
+
+low_skew <- skewnormal %>% select("N.pop", "skew", starts_with("low"))
+names(low_skew) <- substring(names(low_skew), 5)
+colnames(low_skew)[1] <- "N.pop"
+colnames(low_skew)[2] <- "skew"
+low_skew <- low_skew %>% gather("perc", "perc.exp", "clt","tdist", "bca", "bca.exp",
+                                  key = "CI.type", value = "low")
+
+tidyskew<- cover_skew %>% right_join(width_skew, by = c("N.pop", "CI.type", "skew"))
+tidyskew <- tidyskew %>% right_join(high_skew, by = c("N.pop", "CI.type", "skew"))
+tidyskew <- tidyskew %>% right_join(low_skew, by = c("N.pop", "CI.type", "skew"))
+```
+
+
+##CI Methods by Sample Size
+
+```{r, fig.width = 10, fig.height = 5}
+tidyskew %>% #filter(width <20) %>% #filter(CI.type %in% c("bca.exp", "tdist", "perc.exp")) %>%  
+  filter(N.pop %in% c(5, 10, 15, 20, 25, 30)) %>% 
+  ggplot(aes(x = width, y = cover.percentage)) +
+  geom_point(aes(color = CI.type)) +
+  geom_hline(yintercept = 0.95) +
+  facet_wrap(~N.pop, labeller = label_both)
+```
+
+##CI Methods by Skew
+```{r, fig.width = 10, fig.height = 5}
+tidyskew %>% filter(width <20) %>% #filter(CI.type %in% c("bca.exp", "tdist", "perc.exp")) %>%  
+  filter(skew %in% c(-0.9, -0.5, 0, 0.5, 0.9)) %>% 
+  ggplot(aes(x = width, y = cover.percentage)) +
+  geom_point(aes(color = CI.type)) +
+  geom_hline(yintercept = 0.95) +
+  facet_wrap(~skew, labeller = label_both)
+```
+
+##Mixture Distributions {.smaller}
+
+```{r, include = FALSE}
+#Distribution 1
+sn_mean1 <- 40
+sn_stdev1 <- 12.5
+sn_skew1 <- 0.5  
+cp1 <- c(mean=sn_mean1, s.d.=sn_stdev1, gamma1=sn_skew1)
+dp1 <- cp2dp(cp1, family="SN") # the cp2dp function converts the centered parameterization
+LB.for.prob1<-psn(0, dp=dp1) # finds the probability associated with the minimum SUS
+UB.for.prob1<-psn(100, dp=dp1) # finds the probability associated with the maximum SUS
+#Distribution 2
+sn_mean2 <- 70
+sn_stdev2 <- 12.5
+sn_skew2 <- -0.5  
+cp2 <- c(mean=sn_mean2, s.d.=sn_stdev2, gamma1=sn_skew2)
+dp2 <- cp2dp(cp2, family="SN") # 
+LB.for.prob2<-psn(0, dp=dp2) # finds the probability associated with the minimum SUS
+UB.for.prob2<-psn(100, dp=dp2) # finds the probability associated with the maximum SUS
+
+n <- 1000
+w <- rbinom(n, 1, 0.5) #samples to create a probability for each cluster
+data = vector(length = n)
+a = 1
+#Loop to generate data from a mixture distribution
+for(i in w){
+  if (i == 1) {
+    data[a] = qsn(runif(n=1,min=LB.for.prob1,max=UB.for.prob1), dp=dp1, solver="RFB")
+    a <- a +1
+  }
+  else{
+    data[a] = qsn(runif(n=1,min=LB.for.prob2,max=UB.for.prob2), dp=dp2, solver="RFB")
+    a <- a + 1
+  }
+}
+  
+```
+```{r Mixture Distribution Plot, fig.width = 10, fig.height = 4}
+mix <- density(data)
+hump1 <- density(qsn(runif(n=500,min=LB.for.prob1,max=UB.for.prob1), dp=dp1, solver="RFB"))
+hump2 <- density(qsn(runif(n=500,min=LB.for.prob2,max=UB.for.prob2), dp=dp2, solver="RFB"))
+
+plot(range(mix$x, hump1$x, hump2$x), range(mix$y, hump1$y, hump2$y), type = "n", 
+     xlab = "x", ylab = "Density")
+lines(hump1, col = "red") 
+lines(hump2, col = "blue")
+lines(mix)
+
+```
+$f(y_{i}) = f_{1}(y_{i} \mid \theta_{1} = 40)^{z_{i}}f_{2}(y_{i} \mid \theta_{2} = 70)^{1-z_{i}}$
+
+$y_{1} \sim SN(\mu_{i},  \sigma = 12.5, \gamma = 0.5)$, 
+$y_{2} \sim SN(\mu_{2}, \sigma = 12.5, \gamma = -0.5)$, 
+$z_{i} \sim Ber(p)$
+
+## Mixture Distributions with Different Mean Combinations
+
+<style>
+.column-left{
+  float: left;
+  width: 35%;
+}
+
+.column-right{
+  float: right;
+  width: 40%;
+}
+</style>
+
+```{r import_csvs, include = FALSE}
+mixture.25 <- read.csv("./Mixture/mixture_bootstrap_n.pop25_trial100_v2.csv")
+mixture.10 <- read.csv("./Mixture/mixture_bootstrap_n.pop10_trial100_v2.csv")
+```
+<div class = "column-right">
+```{r}
+mixture.25 %>% group_by(mean1, mean2) %>% 
+  summarize(
+    avgcorrect = mean(perc.correct)
+  ) %>% 
+  kable() %>% 
+  kable_styling(bootstrap_options = "striped", full_width = F) %>% 
+  footnote(general = "N.pop = 25, N.trials = 100")
+```
+</div>
+
+<div class = "column-left">
+```{r}
+mixture.10  %>% group_by(mean1, mean2) %>% 
+  summarize(
+    avgcorrect = mean(perc.correct)
+  ) %>% 
+  kable() %>% 
+  kable_styling(bootstrap_options = "striped", full_width = F) %>% 
+  footnote(general = "N.pop = 10, N.trials = 100")
+```
+</div>
+
+
+<style>
+.mycenter {
+    text-align:center;
+}
+</style>
+
+##Flowchart {.smaller}
+
+<div class = "mycenter">
+```{r out.width = "82%"}
+include_graphics("Flowchart.png")
+```
+</div>
+

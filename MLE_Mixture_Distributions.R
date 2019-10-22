@@ -295,5 +295,5 @@ end_time <- Sys.time()
 total_time <- end_time - start_time
 
 
-write.csv(results, "mixture_mle_mean40and60.csv")
+#write.csv(results, "mixture_mle_mean40and60.csv")
 
