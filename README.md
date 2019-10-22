@@ -5,7 +5,7 @@ All important files used to conduct SUS Analysis.
 ## File Names
 
 ### Folders
-* `Plots`: folder contains plots generated from most of the results. Includes plots that were generated from the rmarkdown files. MLE_Results.Rmd plots are not in this folder.
+* `Plots`: folder contains plots generated from most of the results. Includes plots that were generated from the rmarkdown files. `MLE_Results.Rmd` plots are not in this folder.
 * `Results`: folder contains all .csv files generated from various r scripts, all files are used to generate plots in rmarkdown files. 
   * `skewnormal_results (as of 5 AUG 2019).xlsx` is the only .xlsx file that contains final results (cover percentage, width, overcoverage, and undercoveage) from analyzing bootstrap vs clt methods using a skewnormal distribution.
 
