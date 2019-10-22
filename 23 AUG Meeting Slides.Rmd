@@ -55,7 +55,7 @@ plot(density(look_at_prior2(70, 30)), main = "Muprior = 70 and SDprior = 30")
 ##Bayes vs Boostrap CIs
 
 ```{r Bayes vs Boostrap CI Tidy Data, include = FALSE}
-combined_results <- read.csv("bayes_vs_bootstrap_full_data_set.csv")
+combined_results <- read.csv("./Results/bayes_vs_bootstrap_full_data_set.csv")
 width_results <- combined_results %>% select("trial", "N.pop", "skew", starts_with("width"))
 
 names(width_results) <- substring(names(width_results), 7)
@@ -84,7 +84,8 @@ width_results %>% group_by(CI.type) %>% arrange(desc(CI.type)) %>%
                geom="point", shape = 18, size = 3, show.legend = FALSE)+
   geom_text_repel(data = means, aes(label = round(width, digits = 2))) +
   facet_wrap(~Skew, labeller = label_both) +
-  coord_flip()
+  coord_flip() +
+  #ggtitle("Bayes vs. Bootstrap CIs")
 ```
 <div class="notes">
 - N.pop = 10
@@ -108,7 +109,7 @@ cover_percentages %>% kable() %>% kable_styling(font_size = 20) %>%
 ## Full Bayes with Bootstrap CIs {.smaller}
 
 ```{r full bayes, include = FALSE}
-full_bayes <- read.csv("full_bayes_with_sdprior_20_v2.csv")
+full_bayes <- read.csv("./Results/full_bayes_with_sdprior_20_v2.csv")
 #Making Data Tidy To Plot######
 width_results <- full_bayes %>% select("trial", "N.pop", "skew", starts_with("width"))
 
@@ -135,7 +136,8 @@ width_results %>% group_by(CI.type) %>% arrange(desc(CI.type)) %>%
                shape = 18, size = 3, show.legend = FALSE)+
   geom_text_repel(data = means, aes(label = round(width, digits = 2))) +
   facet_wrap(~Skew, labeller = label_both) +
-  coord_flip()
+  coord_flip() +
+  #ggtitle("Full Bayes vs Tdist vs BCa Bootstrap")
 ```
 <div class="notes">
 - N.pop = 10
@@ -223,8 +225,8 @@ $z_{i} \sim Ber(p)$
 </style>
 
 ```{r import_csvs, include = FALSE}
-mixture.25 <- read.csv("./Mixture/mixture_bootstrap_n.pop25_trial100_v2.csv")
-mixture.10 <- read.csv("./Mixture/mixture_bootstrap_n.pop10_trial100_v2.csv")
+mixture.25 <- read.csv("./Results/mixture_bootstrap_n.pop25_trial100_v2.csv")
+mixture.10 <- read.csv("./Results/mixture_bootstrap_n.pop10_trial100_v2.csv")
 ```
 <div class = "column-right">
 ```{r}
@@ -254,7 +256,7 @@ mixture.10  %>% group_by(mean1, mean2) %>%
 ## Mixture Distribution with Different Prior Mu Combinations
 
 ```{r}
-combined_muprior <- read.csv("./Mixture/mixture_bootstrap_mean70_changing_muprior.csv")
+combined_muprior <- read.csv("./Results/mixture_bootstrap_mean70_changing_muprior.csv")
 
 combined_muprior %>% group_by(mean1, mean2, muprior1, muprior2) %>% 
   summarise(

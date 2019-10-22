@@ -77,7 +77,7 @@ plot(density(skew5), main = "Skew = 0.9")
 
 
 ```{r, include = FALSE}
-skewnormal <- read.csv("results_0hw.csv")
+skewnormal <- read.csv("./Results/skewnormal_clt_results_0hw.csv")
 
 #Making Data TIDY
 
@@ -207,8 +207,8 @@ $z_{i} \sim Ber(p)$
 </style>
 
 ```{r import_csvs, include = FALSE}
-mixture.25 <- read.csv("./Mixture/mixture_bootstrap_n.pop25_trial100_v2.csv")
-mixture.10 <- read.csv("./Mixture/mixture_bootstrap_n.pop10_trial100_v2.csv")
+mixture.25 <- read.csv("./Results/mixture_bootstrap_n.pop25_trial100_v2.csv")
+mixture.10 <- read.csv("./Results/mixture_bootstrap_n.pop10_trial100_v2.csv")
 ```
 <div class = "column-right">
 ```{r}
@@ -245,7 +245,7 @@ mixture.10  %>% group_by(mean1, mean2) %>%
 
 <div class = "mycenter">
 ```{r out.width = "82%"}
-include_graphics("Flowchart.png")
+include_graphics("./Plots/Flowchart.png")
 ```
 </div>
 
