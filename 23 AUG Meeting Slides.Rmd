@@ -84,7 +84,7 @@ width_results %>% group_by(CI.type) %>% arrange(desc(CI.type)) %>%
                geom="point", shape = 18, size = 3, show.legend = FALSE)+
   geom_text_repel(data = means, aes(label = round(width, digits = 2))) +
   facet_wrap(~Skew, labeller = label_both) +
-  coord_flip() +
+  coord_flip()
   #ggtitle("Bayes vs. Bootstrap CIs")
 ```
 <div class="notes">
@@ -136,7 +136,7 @@ width_results %>% group_by(CI.type) %>% arrange(desc(CI.type)) %>%
                shape = 18, size = 3, show.legend = FALSE)+
   geom_text_repel(data = means, aes(label = round(width, digits = 2))) +
   facet_wrap(~Skew, labeller = label_both) +
-  coord_flip() +
+  coord_flip()
   #ggtitle("Full Bayes vs Tdist vs BCa Bootstrap")
 ```
 <div class="notes">
