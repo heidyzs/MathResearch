@@ -23,8 +23,8 @@ All important files used to conduct SUS Analysis.
 * `Bayes_vs_Bootstrap_CIs.R`: script used for bayes method compared with bootstrap methods. Analysis of results and plots are also included using `bayes_vs_bootstrap_full_data_set.csv`
 * `BetaSimulation.R`: r script used to run boostrap CIs using a beta distribution.
 * `Mixture_Distribution_Changing_Means.R`: script used to create simulation using a mixture distribution and changing the means.
-* `MLE_Bayes.R`: script containing bayes analysis but also using the MLE to estimate likelihood parameters. Uses truncated normal distribution to fit likelihood. Script can be modified to use a skew normal distribution by changing the `log.lik` function withint the script.
-* `MLE_Mixture_Distributions.R`: script containing mixture distribution analysis but using MLE to estimate parameters. Uses truncated normal distribution to fit likelihood. Script can be modified to use a skew normal distribution by changing the `log.lik` function withint the script. 
+* `MLE_Bayes.R`: script containing bayes analysis but also using the MLE to estimate likelihood parameters. Uses truncated normal distribution to fit likelihood. Script can be modified to use a skew normal distribution by changing the `log.lik` function within the script.
+* `MLE_Mixture_Distributions.R`: script containing mixture distribution analysis but using MLE to estimate parameters. Uses truncated normal distribution to fit likelihood. Script can be modified to use a skew normal distribution by changing the `log.lik` function within the script. 
 * `Skew_Normal_Serial.R`: script containing bootstrap CI analysis using a skew normal distribution. Serial version that is slower.
 * `Skew_Normal_Vectorized_Parallel.R`: script containing bootstrap CI analysis using a skew normal distribution. Uses vectorized parallel version that is faster to run. 
 
