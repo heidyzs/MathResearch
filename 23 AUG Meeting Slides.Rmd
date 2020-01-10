@@ -52,7 +52,7 @@ plot(density(look_at_prior2(70, 25)), main = "Muprior = 70 and SDprior = 25")
 plot(density(look_at_prior2(70, 30)), main = "Muprior = 70 and SDprior = 30")
 ```
 
-##Bayes vs Boostrap CIs
+## Bayes vs Boostrap CIs
 
 ```{r Bayes vs Boostrap CI Tidy Data, include = FALSE}
 combined_results <- read.csv("./Results/bayes_vs_bootstrap_full_data_set.csv")
@@ -93,7 +93,7 @@ width_results %>% group_by(CI.type) %>% arrange(desc(CI.type)) %>%
 - Mu Prior = 70
 </div>
 
-##Cover Perentages
+## Cover Perentages
 
 ```{r}
 cover_percentages <- combined_results %>% group_by(skew) %>% select("skew", starts_with("cover")) %>% 
@@ -145,7 +145,7 @@ width_results %>% group_by(CI.type) %>% arrange(desc(CI.type)) %>%
 - Mu Prior = 70
 </div>
 
-##Cover Percentages
+## Cover Percentages
 
 ```{r}
 full_bayes %>% group_by(skew) %>% select("skew", starts_with("cover")) %>% 
@@ -155,7 +155,7 @@ full_bayes %>% group_by(skew) %>% select("skew", starts_with("cover")) %>%
   column_spec(1, bold = T)
 ```
 
-##Mixture Distributions {.smaller}
+## Mixture Distributions {.smaller}
 
 ```{r, include = FALSE}
 #Distribution 1
