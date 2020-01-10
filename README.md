@@ -27,5 +27,8 @@ All important files used to conduct SUS Analysis.
 * `MLE_Mixture_Distributions.R`: script containing mixture distribution analysis but using MLE to estimate parameters. Uses truncated normal distribution to fit likelihood. Script can be modified to use a skew normal distribution by changing the `log.lik` function within the script. 
 * `Skew_Normal_Serial.R`: script containing bootstrap CI analysis using a skew normal distribution. Serial version that is slower.
 * `Skew_Normal_Vectorized_Parallel.R`: script containing bootstrap CI analysis using a skew normal distribution. Uses vectorized parallel version that is faster to run. 
+* `stanmod.stan`: script containing stan code matching priors derived from Bangor et. al., 2008
+* `MLE_Bayes_Stan.R`: script for simulation involving stan code
+* `Code for App.R`: Some thoughts on what is needed for shiny App
 
 
